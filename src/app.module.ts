@@ -14,6 +14,7 @@ import { CompanyRepository } from "./repositories/company.repository";
 import { PrismaCompanyRepository } from "./repositories/prisma/prisma-company.repository";
 
 // User Controllers
+import { ReadUserController } from "./useCases/user/readUser/read-user.controller";
 import { CreateUserController } from "./useCases/user/createUser/create-user.controller";
 
 // User Providers
@@ -27,6 +28,7 @@ import { PrismaUserRepository } from "./repositories/prisma/prisma-user.reposito
     CreateCompanyController,
     UpdateCompanyController,
     DeleteCompanyController,
+    ReadUserController,
     CreateUserController,
   ],
   providers: [

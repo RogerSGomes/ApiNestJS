@@ -6,7 +6,7 @@ export class ReadCompanyController {
   constructor(private repository: CompanyRepository) {}
 
   @Get("")
-  async GetCompanies(
+  async getCompanies(
     @Query("page") page: string,
     @Query("items_per_page") items_per_page: string
   ) {
@@ -19,7 +19,7 @@ export class ReadCompanyController {
   }
 
   @Get(":id")
-  async GetOneCompany(@Param("id") id: StringConstructor) {
+  async getOneCompany(@Param("id") id: StringConstructor) {
     const response = await this.repository.findOne(Number(id));
 
     return response;
