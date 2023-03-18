@@ -24,7 +24,7 @@ export class PrismaUserRepository implements UserRepository {
         await this.prisma.user.create({
           data: {
             name,
-            companyId: company_id,
+            company_id,
           },
         });
 
@@ -35,7 +35,6 @@ export class PrismaUserRepository implements UserRepository {
         throw new HttpException(
           {
             error: `A empresa com ID ${company_id} não existe.`,
-            error_description: err,
           },
           HttpStatus.NOT_FOUND
         );

@@ -250,6 +250,15 @@ export class PrismaCompanyRepository implements CompanyRepository {
           where: { id },
         });
 
+        const companyAmount = await this.prisma.company.count();
+
+        if (companyAmount === 0) {
+          // Reinicia o AUTO_INCREMENT das tabelas company e user para 1
+          await this.prisma
+            .$executeRaw`ALTER TABLE company AUTO_INCREMENT = 1;`;
+          await this.prisma.$executeRaw`ALTER TABLE user AUTO_INCREMENT = 1;`;
+        }
+
         return {
           message: "Empresa deletada com sucesso.",
         };
