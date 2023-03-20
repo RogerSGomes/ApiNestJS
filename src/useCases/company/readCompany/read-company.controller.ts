@@ -5,23 +5,23 @@ import { CompanyRepository } from "src/repositories/company.repository";
 export class ReadCompanyController {
   constructor(private repository: CompanyRepository) {}
 
-  @Get("")
+  @Get(":id?")
   async getCompanies(
+    @Param("id") id: string,
     @Query("page") page: string,
     @Query("items_per_page") items_per_page: string
   ) {
-    const response = await this.repository.findAll(
-      Number(page),
-      Number(items_per_page)
-    );
+    if (!id) {
+      const response = await this.repository.findAll(
+        Number(page),
+        Number(items_per_page)
+      );
 
-    return response;
-  }
+      return response;
+    } else {
+      const response = await this.repository.findOne(Number(id));
 
-  @Get(":id")
-  async getOneCompany(@Param("id") id: StringConstructor) {
-    const response = await this.repository.findOne(Number(id));
-
-    return response;
+      return response;
+    }
   }
 }

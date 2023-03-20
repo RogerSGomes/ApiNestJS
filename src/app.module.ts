@@ -16,6 +16,8 @@ import { PrismaCompanyRepository } from "./repositories/prisma/prisma-company.re
 // User Controllers
 import { ReadUserController } from "./useCases/user/readUser/read-user.controller";
 import { CreateUserController } from "./useCases/user/createUser/create-user.controller";
+import { UpdateUserController } from "./useCases/user/updateUser/update-user.controller";
+import { DeleteUserController } from "./useCases/user/deleteUser/delete-user.controller";
 
 // User Providers
 import { UserRepository } from "./repositories/user.repository";
@@ -30,6 +32,8 @@ import { PrismaUserRepository } from "./repositories/prisma/prisma-user.reposito
     DeleteCompanyController,
     ReadUserController,
     CreateUserController,
+    UpdateUserController,
+    DeleteUserController,
   ],
   providers: [
     PrismaService,

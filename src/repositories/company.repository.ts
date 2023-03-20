@@ -16,9 +16,9 @@ export abstract class CompanyRepository {
 
   abstract update(
     id: number,
-    name: string,
-    description: string,
-    line_business: string
+    name?: string,
+    description?: string,
+    line_business?: string
   ): Promise<IResponse>;
 
   abstract delete(id: number): Promise<IResponse>;

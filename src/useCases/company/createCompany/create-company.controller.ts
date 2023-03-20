@@ -8,7 +8,7 @@ import { CreateCompanyDTO } from "./create-company.dto";
 export class CreateCompanyController {
   constructor(private repository: CompanyRepository) {}
 
-  @Post("create")
+  @Post()
   async createCompany(@Body() body: CreateCompanyDTO) {
     const { name, description, line_business } = body;
     const response = await this.repository.create(

@@ -5,21 +5,23 @@ import { UserRepository } from "src/repositories/user.repository";
 export class ReadUserController {
   constructor(private repository: UserRepository) {}
 
-  @Get("")
+  @Get(":id?")
   async getUsers(
+    @Param("id") id: string,
     @Query("page") page: number,
     @Query("items_per_page") items_per_page: number
   ) {
-    const response = await this.repository.findAll(
-      Number(page),
-      Number(items_per_page)
-    );
-    return response;
-  }
+    if (!id) {
+      const response = await this.repository.findAll(
+        Number(page),
+        Number(items_per_page)
+      );
 
-  @Get(":id")
-  async getOneUser(@Param("id") id: number) {
-    const response = await this.repository.findOne(Number(id));
-    return response;
+      return response;
+    } else {
+      const response = await this.repository.findOne(Number(id));
+
+      return response;
+    }
   }
 }

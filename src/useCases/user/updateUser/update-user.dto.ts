@@ -1,4 +1,4 @@
 export class UpdateUserDTO {
-  name: string;
-  company_id: number;
+  name?: string;
+  company_id?: number;
 }

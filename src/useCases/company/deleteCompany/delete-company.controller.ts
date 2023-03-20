@@ -6,9 +6,10 @@ import { CompanyRepository } from "src/repositories/company.repository";
 export class DeleteCompanyController {
   constructor(private repository: CompanyRepository) {}
 
-  @Delete("delete/:id")
+  @Delete(":id?")
   async deleteCompany(@Param("id") id: string) {
-    const response = this.repository.delete(Number(id));
+    const response = await this.repository.delete(Number(id));
+
     return response;
   }
 }

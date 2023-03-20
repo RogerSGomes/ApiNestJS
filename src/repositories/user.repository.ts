@@ -12,8 +12,8 @@ export abstract class UserRepository {
 
   abstract update(
     id: number,
-    name: string,
-    company_id: number
+    name?: string,
+    company_id?: number
   ): Promise<IResponse>;
 
   abstract delete(id: number): Promise<IResponse>;

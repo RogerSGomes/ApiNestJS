@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 
 import { PrismaService } from "src/database/prisma.service";
 import { CompanyRepository, IResponse } from "../company.repository";
@@ -33,39 +33,35 @@ export class PrismaCompanyRepository implements CompanyRepository {
         },
         HttpStatus.BAD_REQUEST
       );
-    } else {
-      const companyAmount = await this.prisma.company.count();
-      const companies = await this.prisma.company.findMany({
-        skip: (page - 1) * items_per_page,
-        take: items_per_page,
-        orderBy: { id: "asc" },
-      });
-
-      if (companyAmount == 0) {
-        throw new HttpException(
-          {
-            error: "Não existe nenhuma empresa cadastrada.",
-          },
-          HttpStatus.NOT_FOUND
-        );
-      }
-
-      if (companies.length === 0) {
-        throw new HttpException(
-          {
-            error: "Esta página não contém empresas.",
-          },
-          HttpStatus.NOT_FOUND
-        );
-      }
-
-      return {
-        data: {
-          companies,
-          total: companyAmount,
-        },
-      };
     }
+
+    const companyAmount = await this.companyAmount();
+    if (companyAmount == 0) {
+      throw new HttpException(
+        { error: "Não existe nenhuma empresa cadastrada." },
+        HttpStatus.NOT_FOUND
+      );
+    }
+
+    const companies = await this.prisma.company.findMany({
+      skip: (page - 1) * items_per_page,
+      take: items_per_page,
+      orderBy: { id: "asc" },
+    });
+
+    if (companies.length === 0) {
+      throw new HttpException(
+        { error: "Esta página não contém empresas." },
+        HttpStatus.NOT_FOUND
+      );
+    }
+
+    return {
+      data: {
+        companies,
+        total: companyAmount,
+      },
+    };
   }
 
   /**
@@ -88,33 +84,25 @@ export class PrismaCompanyRepository implements CompanyRepository {
       );
     }
 
-    const companyAmount = await this.prisma.company.count();
-
-    if (companyAmount === 0) {
+    if ((await this.companyAmount()) === 0) {
       throw new HttpException(
-        {
-          error: "Não existe nenhuma empresa cadastrada.",
-        },
+        { error: "Não existe nenhuma empresa cadastrada." },
         HttpStatus.NOT_FOUND
       );
-    } else {
-      try {
-        const company = await this.prisma.company.findFirstOrThrow({
-          where: { id },
-          include: { users: true },
-        });
+    }
 
-        return {
-          data: company,
-        };
-      } catch (err) {
-        throw new HttpException(
-          {
-            error: `A empresa com ID ${id} não existe.`,
-          },
-          HttpStatus.NOT_FOUND
-        );
-      }
+    try {
+      const company = await this.prisma.company.findFirstOrThrow({
+        where: { id },
+        include: { users: true },
+      });
+
+      return { data: company };
+    } catch {
+      throw new HttpException(
+        { error: `A empresa com ID ${id} não existe.` },
+        HttpStatus.NOT_FOUND
+      );
     }
   }
 
@@ -139,43 +127,37 @@ export class PrismaCompanyRepository implements CompanyRepository {
         },
         HttpStatus.BAD_REQUEST
       );
-    } else {
-      const companyAlreadyExists = await this.prisma.company.findFirst({
-        where: {
-          name,
-          description,
-        },
-      });
-
-      if (companyAlreadyExists) {
-        throw new HttpException(
-          {
-            error: "Esta empresa já existe",
-          },
-          HttpStatus.CONFLICT
-        );
-      } else {
-        await this.prisma.company.create({
-          data: {
-            name: name,
-            description: description,
-            line_business: line_business,
-          },
-        });
-
-        return {
-          message: "Empresa criada com sucesso",
-        };
-      }
     }
+
+    const companyAlreadyExists = await this.prisma.company.findFirst({
+      where: { name, description },
+    });
+
+    if (companyAlreadyExists) {
+      throw new HttpException(
+        { error: "Esta empresa já existe." },
+        HttpStatus.CONFLICT
+      );
+    }
+
+    await this.prisma.company.create({
+      data: {
+        name: name,
+        description: description,
+        line_business: line_business,
+      },
+    });
+
+    return { message: "Empresa criada com sucesso" };
   }
 
   async update(
     id: number,
-    name: string,
-    description: string,
-    line_business: string
+    name?: string,
+    description?: string,
+    line_business?: string
   ): Promise<IResponse> {
+    // Verifica se o parâmetro 'id' é válido.
     if (!id || isNaN(id) || id < 1) {
       throw new HttpException(
         {
@@ -184,44 +166,40 @@ export class PrismaCompanyRepository implements CompanyRepository {
         },
         HttpStatus.BAD_REQUEST
       );
-    } else if (!name && !description && !line_business) {
-      throw new HttpException(
-        {
-          error: "Forneça o que deseja atualizar na empresa.",
-        },
-        HttpStatus.BAD_REQUEST
-      );
-    } else {
-      const companyExists = await this.prisma.company.findFirst({
+    }
+
+    // Verifica se a empresa existe.
+    try {
+      await this.prisma.company.findFirstOrThrow({
         where: { id },
       });
-
-      if (!companyExists) {
-        throw new HttpException(
-          {
-            error: `A empresa com ID ${id} não foi encontrada.`,
-          },
-          HttpStatus.NOT_FOUND
-        );
-      } else {
-        const data: UpdateCompanyDTO = {
-          name: name ? name : undefined,
-          description: description ? description : undefined,
-          line_business: line_business ? line_business : undefined,
-        };
-
-        await this.prisma.company.update({
-          where: {
-            id,
-          },
-          data,
-        });
-
-        return {
-          message: "Empresa atualizada com sucesso.",
-        };
-      }
+    } catch {
+      throw new HttpException(
+        { error: `A empresa com ID ${id} não foi encontrada.` },
+        HttpStatus.NOT_FOUND
+      );
     }
+
+    // Verifica pelo menos um dos parâmetros de atualização foram fornecidos.
+    if (!name && !description && !line_business) {
+      throw new HttpException(
+        { error: "Forneça o que deseja atualizar das informações da empresa." },
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const data: UpdateCompanyDTO = {
+      name: name ?? undefined,
+      description: description ?? undefined,
+      line_business: line_business ?? undefined,
+    };
+
+    await this.prisma.company.update({
+      where: { id },
+      data,
+    });
+
+    return { message: "Empresa atualizada com sucesso." };
   }
 
   async delete(id: number): Promise<IResponse> {
@@ -233,36 +211,33 @@ export class PrismaCompanyRepository implements CompanyRepository {
         },
         HttpStatus.BAD_REQUEST
       );
-    } else {
-      const companyExists = await this.prisma.company.findFirst({
+    }
+
+    try {
+      await this.prisma.company.findFirstOrThrow({
         where: { id },
       });
-
-      if (!companyExists) {
-        throw new HttpException(
-          {
-            error: `A empresa com ID ${id} não existe.`,
-          },
-          HttpStatus.NOT_FOUND
-        );
-      } else {
-        await this.prisma.company.delete({
-          where: { id },
-        });
-
-        const companyAmount = await this.prisma.company.count();
-
-        if (companyAmount === 0) {
-          // Reinicia o AUTO_INCREMENT das tabelas company e user para 1
-          await this.prisma
-            .$executeRaw`ALTER TABLE company AUTO_INCREMENT = 1;`;
-          await this.prisma.$executeRaw`ALTER TABLE user AUTO_INCREMENT = 1;`;
-        }
-
-        return {
-          message: "Empresa deletada com sucesso.",
-        };
-      }
+    } catch {
+      throw new HttpException(
+        { error: `A empresa com ID ${id} não existe.` },
+        HttpStatus.NOT_FOUND
+      );
     }
+
+    await this.prisma.company.delete({
+      where: { id },
+    });
+
+    if ((await this.companyAmount()) === 0) {
+      // Reinicia o AUTO_INCREMENT das tabelas company e user para 1
+      await this.prisma.$executeRaw`ALTER TABLE company AUTO_INCREMENT = 1;`;
+      await this.prisma.$executeRaw`ALTER TABLE user AUTO_INCREMENT = 1;`;
+    }
+
+    return { message: "Empresa deletada com sucesso." };
+  }
+
+  private async companyAmount() {
+    return await this.prisma.company.count();
   }
 }

@@ -8,7 +8,7 @@ import { CreateUserDTO } from "./create-user.dto";
 export class CreateUserController {
   constructor(private repository: UserRepository) {}
 
-  @Post("create")
+  @Post()
   async createUser(@Body() body: CreateUserDTO) {
     const { name, company_id } = body;
     const response = await this.repository.create(name, company_id);
