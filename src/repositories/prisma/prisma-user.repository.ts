@@ -4,13 +4,15 @@ import { PrismaService } from "src/database/prisma.service";
 import { UserRepository, IResponse } from "../user.repository";
 
 // DTOS
+import { ReadUserDTO } from "src/useCases/user/readUser/read-user.dto";
+import { CreateUserDTO } from "src/useCases/user/createUser/create-user.dto";
 import { UpdateUserDTO } from "src/useCases/user/updateUser/update-user.dto";
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(page: number, items_per_page: number): Promise<IResponse> {
+  async findAll({ page, items_per_page }: ReadUserDTO): Promise<IResponse> {
     if (
       !page ||
       !items_per_page ||
@@ -90,7 +92,7 @@ export class PrismaUserRepository implements UserRepository {
     }
   }
 
-  async create(name: string, company_id: number): Promise<IResponse> {
+  async create({ name, company_id }: CreateUserDTO): Promise<IResponse> {
     if (!name || !company_id) {
       throw new HttpException(
         { error: "Os campos 'name' e 'company' são obrigatórios." },
@@ -128,8 +130,7 @@ export class PrismaUserRepository implements UserRepository {
 
   async update(
     id: number,
-    name?: string,
-    company_id?: number
+    { name, company_id }: UpdateUserDTO
   ): Promise<IResponse> {
     // Verifica se o parâmetro 'id' é válido.
     if (!id || isNaN(id) || id < 1) {

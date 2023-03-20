@@ -8,14 +8,6 @@ export class UpdateCompanyController {
 
   @Put(":id?")
   async updateCompany(@Param("id") id: string, @Body() body: UpdateCompanyDTO) {
-    const { name, description, line_business } = body;
-    const response = await this.repository.update(
-      Number(id),
-      name,
-      description,
-      line_business
-    );
-
-    return response;
+    return await this.repository.update(Number(id), body);
   }
 }

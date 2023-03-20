@@ -10,9 +10,6 @@ export class CreateUserController {
 
   @Post()
   async createUser(@Body() body: CreateUserDTO) {
-    const { name, company_id } = body;
-    const response = await this.repository.create(name, company_id);
-
-    return response;
+    return await this.repository.create(body);
   }
 }

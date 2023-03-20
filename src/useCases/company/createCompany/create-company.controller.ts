@@ -10,13 +10,6 @@ export class CreateCompanyController {
 
   @Post()
   async createCompany(@Body() body: CreateCompanyDTO) {
-    const { name, description, line_business } = body;
-    const response = await this.repository.create(
-      name,
-      description,
-      line_business
-    );
-
-    return response;
+    return await this.repository.create(body);
   }
 }

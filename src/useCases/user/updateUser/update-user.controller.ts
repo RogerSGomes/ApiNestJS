@@ -8,9 +8,6 @@ export class UpdateUserController {
 
   @Put(":id?")
   async updateUser(@Param("id") id: string, @Body() body: UpdateUserDTO) {
-    const { name, company_id } = body;
-    const response = await this.repository.update(Number(id), name, company_id);
-
-    return response;
+    return await this.repository.update(Number(id), body);
   }
 }

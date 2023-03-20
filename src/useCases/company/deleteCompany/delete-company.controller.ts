@@ -8,8 +8,6 @@ export class DeleteCompanyController {
 
   @Delete(":id?")
   async deleteCompany(@Param("id") id: string) {
-    const response = await this.repository.delete(Number(id));
-
-    return response;
+    return await this.repository.delete(Number(id));
   }
 }

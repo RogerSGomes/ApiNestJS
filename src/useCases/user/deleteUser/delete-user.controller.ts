@@ -7,8 +7,6 @@ export class DeleteUserController {
 
   @Delete(":id?")
   async deleteUser(@Param("id") id: string) {
-    const response = await this.repository.delete(Number(id));
-
-    return response;
+    return await this.repository.delete(Number(id));
   }
 }

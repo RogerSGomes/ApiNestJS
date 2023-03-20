@@ -4,6 +4,8 @@ import { PrismaService } from "src/database/prisma.service";
 import { CompanyRepository, IResponse } from "../company.repository";
 
 // DTOS
+import { ReadCompanyDTO } from "src/useCases/company/readCompany/read-company.dto";
+import { CreateCompanyDTO } from "src/useCases/company/createCompany/create-company.dto";
 import { UpdateCompanyDTO } from "src/useCases/company/updateCompany/update-company.dto";
 
 @Injectable()
@@ -17,7 +19,7 @@ export class PrismaCompanyRepository implements CompanyRepository {
    * @returns {Promise<IResponse>} - Retorna um objeto IResponse contendo as empresas e o total de empresas cadastradas.
    * @throws {HttpException} - Retorna um erro HttpException se a página não contém empresas, se não há empresas cadastradas ou se os parâmetros passados não são válidos.
    */
-  async findAll(page: number, items_per_page: number): Promise<IResponse> {
+  async findAll({ page, items_per_page }: ReadCompanyDTO): Promise<IResponse> {
     if (
       !page ||
       !items_per_page ||
@@ -114,11 +116,11 @@ export class PrismaCompanyRepository implements CompanyRepository {
    * @returns {Promise<IResponse>} - Resposta da requisição contendo uma mensagem de sucesso ou erro
    * @throws {HttpException} - Exceção HTTP 400 caso os campos obrigatórios não sejam informados ou exceção HTTP 409 caso a empresa já exista
    */
-  async create(
-    name: string,
-    description: string,
-    line_business: string
-  ): Promise<IResponse> {
+  async create({
+    name,
+    description,
+    line_business,
+  }: CreateCompanyDTO): Promise<IResponse> {
     if (!name || !description || !line_business) {
       throw new HttpException(
         {
@@ -153,9 +155,7 @@ export class PrismaCompanyRepository implements CompanyRepository {
 
   async update(
     id: number,
-    name?: string,
-    description?: string,
-    line_business?: string
+    { name, description, line_business }: UpdateCompanyDTO
   ): Promise<IResponse> {
     // Verifica se o parâmetro 'id' é válido.
     if (!id || isNaN(id) || id < 1) {
