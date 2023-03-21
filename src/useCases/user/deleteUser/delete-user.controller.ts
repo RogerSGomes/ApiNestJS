@@ -1,7 +1,7 @@
 import { Controller, Delete, Param } from "@nestjs/common";
 
-import { UserRepository } from "src/repositories/user.repository";
-import { ParseIntPipe } from "src/pipes/parse-int.pipe";
+import { UserRepository } from "../../../repositories/user.repository";
+import { ParseIntPipe } from "../../../pipes/parse-int.pipe";
 
 @Controller("user")
 export class DeleteUserController {
@@ -9,6 +9,10 @@ export class DeleteUserController {
 
   @Delete(":id?")
   async deleteUser(@Param("id", ParseIntPipe) id: number) {
-    return await this.repository.delete(id);
+    try {
+      return await this.repository.delete(id);
+    } catch (error) {
+      throw error;
+    }
   }
 }

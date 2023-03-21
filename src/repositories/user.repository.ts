@@ -2,19 +2,14 @@ import { ReadUserDTO } from "src/useCases/user/readUser/read-user.dto";
 import { CreateUserDTO } from "src/useCases/user/createUser/create-user.dto";
 import { UpdateUserDTO } from "src/useCases/user/updateUser/update-user.dto";
 
-export interface IResponse {
-  message?: string;
-  data?: Object[] | Object;
-}
-
 export abstract class UserRepository {
-  abstract findAll(query: ReadUserDTO): Promise<IResponse>;
+  abstract findAll(query: ReadUserDTO): Promise<IUser[]>;
 
-  abstract findOne(id: number): Promise<IResponse>;
+  abstract findOne(id: number): Promise<IUser>;
 
-  abstract create(body: CreateUserDTO): Promise<IResponse>;
+  abstract create(body: CreateUserDTO): Promise<IUser>;
 
-  abstract update(id: number, body: UpdateUserDTO): Promise<IResponse>;
+  abstract update(id: number, body: UpdateUserDTO): Promise<IUser>;
 
-  abstract delete(id: number): Promise<IResponse>;
+  abstract delete(id: number): Promise<IUser>;
 }

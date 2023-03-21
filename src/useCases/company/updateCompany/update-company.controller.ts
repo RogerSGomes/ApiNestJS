@@ -1,7 +1,7 @@
-import { Controller, Put, Param, Body } from "@nestjs/common/decorators";
+import { Controller, Put, Param, Body } from "@nestjs/common";
 
-import { CompanyRepository } from "src/repositories/company.repository";
-import { ParseIntPipe } from "src/pipes/parse-int.pipe";
+import { CompanyRepository } from "../../../repositories/company.repository";
+import { ParseIntPipe } from "../../../pipes/parse-int.pipe";
 import { UpdateCompanyDTO } from "./update-company.dto";
 
 @Controller("company")
@@ -11,8 +11,14 @@ export class UpdateCompanyController {
   @Put(":id?")
   async updateCompany(
     @Param("id", ParseIntPipe) id: number,
-    @Body() body: UpdateCompanyDTO
-  ) {
-    return await this.repository.update(id, body);
+    @Body() updateCompanyDTO: UpdateCompanyDTO
+  ): Promise<IResponse> {
+    updateCompanyDTO.validateFields();
+
+    const response = await this.repository.update(id, updateCompanyDTO);
+
+    return {
+      data: response,
+    };
   }
 }
