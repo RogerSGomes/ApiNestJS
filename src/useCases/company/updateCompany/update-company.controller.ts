@@ -15,10 +15,10 @@ export class UpdateCompanyController {
   ): Promise<IResponse> {
     updateCompanyDTO.validateFields();
 
-    const response = await this.repository.update(id, updateCompanyDTO);
+    await this.repository.update(id, updateCompanyDTO);
 
     return {
-      data: response,
+      message: "Empresa atualizada com sucesso.",
     };
   }
 }

@@ -8,11 +8,13 @@ export class CreateUserController {
   constructor(private repository: UserRepository) {}
 
   @Post()
-  async createUser(@Body() body: CreateUserDTO) {
-    try {
-      return await this.repository.create(body);
-    } catch (error) {
-      throw error;
-    }
+  async createUser(@Body() createUserDTO: CreateUserDTO): Promise<IResponse> {
+    createUserDTO.validateFields();
+
+    await this.repository.create(createUserDTO);
+
+    return {
+      message: "Usuário cadastrado com sucesso.",
+    };
   }
 }

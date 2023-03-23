@@ -8,11 +8,11 @@ export class DeleteUserController {
   constructor(private repository: UserRepository) {}
 
   @Delete(":id?")
-  async deleteUser(@Param("id", ParseIntPipe) id: number) {
-    try {
-      return await this.repository.delete(id);
-    } catch (error) {
-      throw error;
-    }
+  async deleteUser(@Param("id", ParseIntPipe) id: number): Promise<IResponse> {
+    await this.repository.delete(id);
+
+    return {
+      message: "Usuário deletado com sucesso.",
+    };
   }
 }

@@ -11,12 +11,14 @@ export class UpdateUserController {
   @Put(":id?")
   async updateUser(
     @Param("id", ParseIntPipe) id: number,
-    @Body() body: UpdateUserDTO
-  ) {
-    try {
-      return await this.repository.update(id, body);
-    } catch (error) {
-      throw error;
-    }
+    @Body() updateUserDTO: UpdateUserDTO
+  ): Promise<IResponse> {
+    updateUserDTO.validateFields();
+
+    await this.repository.update(id, updateUserDTO);
+
+    return {
+      message: "Usuário atualizado com sucesso.",
+    };
   }
 }

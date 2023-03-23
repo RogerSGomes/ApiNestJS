@@ -20,16 +20,16 @@ export class ReadCompanyController {
     @Query("page", ParseIntPipe) page?: number,
     @Query("items_per_page", ParseIntPipe) items_per_page?: number
   ): Promise<IResponse> {
-    const query = new ReadCompanyDTO();
+    const readCompanyDTO = new ReadCompanyDTO();
 
     if ((page || page == 0) && (items_per_page || items_per_page == 0)) {
-      query.page = page;
-      query.items_per_page = items_per_page;
+      readCompanyDTO.page = page;
+      readCompanyDTO.items_per_page = items_per_page;
 
-      query.validateFields();
+      readCompanyDTO.validateFields();
     }
 
-    const companies = await this.repository.findAll(query);
+    const companies = await this.repository.findAll(readCompanyDTO);
 
     return {
       data: companies,
