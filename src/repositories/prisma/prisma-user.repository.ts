@@ -31,7 +31,7 @@ export class PrismaUserRepository implements UserRepository {
     if (users.length === 0) {
       throw new HttpException(
         {
-          error: "Nenhum usuário encontrada.",
+          error: "Nenhum usuário encontrado.",
         },
         HttpStatus.NOT_FOUND
       );
